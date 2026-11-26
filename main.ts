@@ -23,4 +23,13 @@ if (word.length < 1 || word.length > 30 || /\s/.test(word)) {
 
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, "entry.txt"), word, "utf8");
+
+// Read back what was written: the scorer reads this exact file, so fail
+// loudly here instead of shipping a silently corrupted entry.
+const written = readFileSync(join(outDir, "entry.txt"), "utf8");
+if (written !== word) {
+  throw new Error(
+    `wrote ${JSON.stringify(written)} to entry.txt, expected ${JSON.stringify(word)}`,
+  );
+}
 console.log(word);
